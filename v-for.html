@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <script src="js/bootstrap.min.js"></script>
+  <script src="vue.js"></script>
+  <title>V-for</title>
+</head>
+
+<body>
+  <div id="app">
+    <div class="col-md-9 post">
+      <h1>V-for Detail</h1>
+      <!-- 練習開始 -->
+
+      <div class="alert alert-secondary">
+        <h2>Template sytax v-if and v-for</h2>
+        <p>Use v-for show list</p>
+        <ul class="mb-0">
+          <li v-for="(item, key) in arrayData">{{key}}- {{item.name}} {{item.age}} years old.</li>
+
+        </ul>
+        <hr>
+        <h2>Key</h2>
+        <p>See different with key</p>
+        <ul>
+          <li v-for="(item, key) in  arrayData" :key="item.age">
+            {{key}} - {{item.name}} {{item.age}} years old
+            <input type="text">
+          </li>
+        </ul>
+        <button class="btn btn-outline-primary" @click="reverseArray">Reverse Array</button>
+        <hr>
+        <h2>Filter</h2>
+        <p>Make filter</p>
+        <input type="text" class="form-control" v-model="filterText">
+        <ul>
+          <li v-for="(item, key) in filterArray" :key="item.age">
+            {{key}} - {{item.name}} {{item.age}} years old
+
+          </li>
+        </ul>
+        <button class="btn btn-outline-primary" @click="filterData">Filter Data</button>
+        <hr>
+        <h2>V-for with a range</h2>
+        <ul v-for="item in 5">
+          <li>{{item}}</li>
+        </ul>
+        <hr>
+        <h2>V-for on a "template"</h2>
+        <table class="table">
+          <template v-for="item in arrayData">
+            <tr>
+              <td>{{item.age}}</td>
+            </tr>
+            <tr>
+              <td>{{item.name}}</td>
+            </tr>
+          </template>
+
+        </table>
+        <ul>
+          <template v-for="item in arrayData">
+            <li>{{ item.name }}</li>
+
+          </template>
+        </ul>
+        <hr>
+        <h2>v-for and v-if</h2>
+        <p>Add v-if after v-for</p>
+        <ul>
+          <li v-for="(item, key) in arrayData" v-if="item.age >=20">
+            {{key}} - {{item.name}} {{item.age}} years old
+
+          </li>
+        </ul>
+        <hr>
+        <h2>V-for with a Component</h2>
+        <p>Later have special unit for component!</p>
+        <ul>
+          <list-item :item='item' v-for="(item,key) in arrayData"></list-item>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    Vue.component('list-item', {
+      template:`
+      <li>
+        {{item.name}} {{item.age}} years old.
+      </li>
+      `,
+      props:['item']
+    });
+    var app = new Vue({
+      el: '#app',
+      data: {
+        arrayData: [{
+            name: 'Ming',
+            age: 16
+          },
+          {
+            name: 'Mother',
+            age: 38,
+          },
+          {
+            name: 'Auntie',
+            age: 24
+          }
+        ],
+        objectData: {
+          ming: {
+            name: 'ming',
+            age: 16
+          },
+          auntie: {
+            name: 'beautiful',
+            age: 25
+          },
+          mom: {
+            name: 'mother',
+            age: 40
+          }
+        },
+        filterArray: [],
+        filterText: '',
+      },
+      methods: {
+        reverseArray: function () {
+          this.arrayData.reverse()
+        },
+        filterData: function () {
+          let vm = this;
+          vm.filterArray = vm.arrayData.filter(function (item) {
+            console.log("haha", item.name);
+            console.log("wow", vm.filterText);
+            console.log(item.name.match(vm.filterText));
+            return item.name.match(vm.filterText);
+          })
+        }
+      }
+    })
+  </script>
+
+  <!-- 解答：
+      <pre>{{ list }}</pre>
+      <ul>
+        <li v-for="(item, key) in list" v-if="item.age < 30">
+          {{ key }} {{ item.name }}
+        </li>
+      </ul>
+      -->
+</body>
+
+</html>

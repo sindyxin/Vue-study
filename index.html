@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <script src="js/bootstrap.min.js"></script>
+  <script src="vue.js"></script>
+  
+  <title>Home Page</title>
+</head>
+
+<body>
+  <div id="app">
+    <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="basic-addon1">To Do List</span>
+      </div>
+      <input type="text" class="form-control" placeholder="Add new stuff on the list" v-model="newTodo" @keyup.enter="addTodo">
+
+      <div class="input-group-append">
+        <button class="btn btn-primary" type="button" @click="addTodo">Add</button>
+      </div>
+    </div>
+    <div class="card text-center">
+      <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs">
+          <li class="nav-item">
+            <a class="nav-link" v-bind:class="{'active':visibility=='all'}" @click="visibility='all'" href="#">All</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link " v-bind:class="{'active':visibility=='inprocess'}" @click="visibility='inprocess'" href="#">In Process</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" v-bind:class="{'active':visibility=='completed'}" @click="visibility='completed'" href="#">Completed</a>
+          </li>
+        </ul>
+      </div>
+      <ul class="list-group list-group-flush text-left">
+        <li class="list-group-item" v-for="(item, key) in filteredTodos" @dblclick="editTodo(item)">
+          <div class="d-flex" v-if="item.id!==cacheTodo.id">
+            <div class="form-check">
+              <input type="checkbox" class="form-check-input" v-model="item.completed" v-bind:id="item.id">
+              <label class="form-check-label" v-bind:class="{'completed':item.completed}" v-bind:for="item.id">
+                {{item.title}} <br>
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon1">Due date</span>
+                </div>
+                <input type="date" class="form-control"> 
+              </label>
+            </div>
+
+          </div>
+          <input type="text" class="form-control"          
+          v-model='cacheTitle'
+          @keyup.sec = "cancelEdit"
+          @keyup.enter="doneEdit(item)"
+          v-if="item.id == cacheTodo.id"
+          >
+          <p><button type="button" class="btn btn-success" @click="editTodo(item)" aria-label="Close">
+            Edit
+          </button>
+          <button type="button" class="btn btn-danger" @click="removeTodo(key)" aria-label="Close">
+            Delete
+          </button></p>
+        </li>
+        <div class="card-footer d-flex justify-content-between">
+          <span>Still {{count}} stuff(s) need to do!</span>
+          <button type="button" class="btn btn-danger" @click="cleanCompleted()" aria-label="Close">
+            Clean All Completed!
+          </button>
+        </div>
+      </ul>
+      <!-- <div class="card-footer d-flex justify-content-between">
+        <span>Still {{count}} stuff(s) need to do!</span>
+        <a href="#">Clean all stuff!</a>
+      </div> -->
+    </div>
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        newTodo:'',
+
+        todos:[
+          // {
+          // id:'12',
+          // title:'hello',
+          // dueDate: "2018-07-22",
+          
+          // completed: false,
+          // }
+        ],
+        cacheTodo: {},//temporarily save todo here
+        cacheTitle:'',//when edit title presave here
+        visibility: 'all',
+      },
+      methods:{
+        addTodo:function(){
+          var value = this.newTodo.trim();
+          var timestamp = Math.floor(Date.now());
+          console.log(value,timestamp);
+          if (!value){
+            return;
+          }
+          this.todos.push({
+          id:timestamp,
+          title:value,
+          dueDate:value,
+          computed: false,
+          }); 
+          this.newTodo='';
+
+        },
+        removeTodo:function(key){
+
+          this.todos.splice(key,1)
+
+        },
+        editTodo: function(item){
+          console.log(item);
+          this.cacheTodo = item;
+          this.cacheTitle = item.title;
+
+        },
+        cancelEdit: function(){
+          this.cacheTodo = {}
+        },
+        doneEdit: function(item){
+          item.title = this.cacheTitle;
+          this.cacheTitle = ''
+          this.cacheTodo = {}
+        },
+
+      },
+      computed: {
+        filteredTodos:function(){         
+          if(this.visibility == 'all'){
+            return this.todos;
+          }else if(this.visibility=='inprocess'){
+
+            var processTodos = [];
+            this.todos.forEach(function(item){
+              if(!item.completed){
+                processTodos.push(item);
+              }
+            })
+            return processTodos;
+          }else if(this.visibility=='completed'){
+            var completedTodos=[];
+            this.todos.forEach(function(item){
+              if(item.completed){
+                completedTodos.push(item);
+
+              }
+            })
+            return completedTodos;
+          }
+          return [];
+       
+        },
+        
+        count: function(){
+          var count = 0;
+          this.todos.forEach(function(item){
+            if(!item.completed){
+              count ++;
+            }
+          })
+          return count;
+
+        }
+
+      },
+    });
+  </script>
+
+  <style>
+    .completed {
+      text-decoration: line-through
+    }
+  </style>
+
+</body>
+
+</html>

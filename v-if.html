@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <script src="js/bootstrap.min.js"></script>
+  <script src="vue.js"></script>
+  <title>V-if</title>
+</head>
+
+<body>
+  <div id="app" class="alert alert-secondary">
+    <h4>v-if, v-else</h4>
+    <p>use v-if, v-else change object show state!</p>
+    <div class="alert alert-success" v-if="isSuccess==true">Success!</div>
+    <div class="alert alert-danger" v-else>Fail!</div>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="isSuccess" v-model="isSuccess">
+      <label class="form-check-label" for="isSuccess">Change State</label>
+    </div>
+    <hr>
+    <h4>TemplatenTag</h4>
+    <p>Use template switch DOM show state</p>
+    <table class="table">
+      <thead>
+        <th>Number</th>
+        <th>Name</th>
+      </thead>
+      <template v-if="showTemplate==true">
+        <tr>
+          <td>1</td>
+          <td>Anne</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Mike</td>
+        </tr>
+      </template>
+    </table>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="showTemplate" v-model="showTemplate">
+      <label class="form-check-label" for="showTemplate">Show Template</label>
+    </div>
+    <hr>
+    <h4>v-else-if</h4>
+    <p>Use v-else-if make active page</p>
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link" href="#" :class={'active':link=='a'} @click.prevent="link='a'">Page 1</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" :class={'active':link=='b'} @click.prevent="link='b'">Page 2</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#" :class={'active':link=='c'} @click.prevent="link='c'">Page 3</a>
+      </li>
+    </ul>
+    <div class="content">
+      <div v-if="link=='a'">Ａ</div>
+      <div v-else-if="link=='b'">Ｂ</div>
+      <div v-else-if="link=='c'">Ｃ</div>
+    </div>
+    <hr>
+    <h4>KEY</h4>
+    <p>Key can solve Vue switch state problem</p>
+    <template v-if="loginType === 'username'">
+      <label>Username</label>
+      <input class="form-control" placeholder="Enter your username" :key='1'>
+    </template>
+    <template v-else>
+      <label>Email</label>
+      <input class="form-control" placeholder="Enter your email address" :key='3'>
+    </template>
+    <button class="btn btn-outline-primary mt-3" @click="toggleLoginType">Switch State</button>
+    <hr>
+    <h4>v-if VS v-show</h4>
+    <p>Compare v-if and v-show</p>
+    <!-- the different in html inspect show will show both element in source, v-if only show one each time -->
+    <div class="alert alert-success" v-show="isSuccess">Success!</div>
+    <div class="alert alert-danger" v-show="!isSuccess">Fail!</div>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" id="isSuccess2" v-model="isSuccess">
+      <label class="form-check-label" for="isSuccess2">Switch State</label>
+    </div>
+  </div>
+
+  <script>
+    var app = new Vue({
+      el: '#app',
+      data: {
+        isSuccess: true,
+        showTemplate: true,
+
+        link: 'a',
+
+        loginType: 'username'
+      },
+      methods: {
+        toggleLoginType: function () {
+          return this.loginType = this.loginType === 'username' ? 'email' : 'username'
+        }
+      }
+    });
+  </script>
+
+</body>
+
+</html>
