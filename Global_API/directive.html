@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <script src="../js/bootstrap.min.js"></script>
+  <script src="../vue.js"></script>
+  <title>Document</title>
+</head>
+
+<body>
+
+  <div class="alert alert-secondary">
+    <h1 class="mt-0 text-muted">自定義指令</h1>
+    <div id="app">
+      <input type="email" v-model="email" v-focus v-validator="{ className: 'form-control' }">
+    </div>
+
+    <script>
+      // 官方文件 https://cn.vuejs.org/v2/guide/custom-directive.html
+      Vue.directive('focus', {
+        inserted: function (el) {
+          el.focus()
+        }
+      })
+
+      Vue.directive('validator', {
+        update: function (el, binding, vnode) {
+          console.log('update', el.value, el.className, vnode);
+
+          // 尋找當前的 model 名稱
+          var currentModel = vnode.data.directives.find(function (o) {
+            return o.name === 'model';
+          }).expression;
+
+          // 從當前 Model 取值
+          var value = vnode.context[currentModel];
+
+          // Email validate
+          var re =
+            /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+          if (!re.test(value)) {
+            el.className = 'form-control is-invalid'
+          } else {
+            el.className = 'form-control is-valid'
+          }
+        },
+        bind: function (el, binding, vnode) {
+          console.log('bind', el, binding, vnode);
+          el.className = binding.value.className
+
+          var currentModel = vnode.data.directives.find(function (o) {
+            return o.name === 'model';
+          }).expression;
+          var value = vnode.context[currentModel];
+
+          var re =
+            /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+          if (!re.test(value)) {
+            el.className = 'form-control is-invalid'
+          } else {
+            el.className = 'form-control is-valid'
+          }
+        }
+      });
+
+      var app = new Vue({
+        el: '#app',
+        data: {
+          email: 'aaa',
+        },
+        mounted: function () {
+          console.log('Vue init:', this)
+        }
+      });
+    </script>
+
+
+
+  </div>
+</body>
+
+</html>

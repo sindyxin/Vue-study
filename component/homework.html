@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="../js/bootstrap.min.js"></script>
+  <script src="../vue.js"></script>
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    <select name="" id="" class="form-control mb-3" v-model="filter">
+      <option value="">--- 請選擇城市 ---</option>
+      <option :value="item" v-for="item in location">{{item}}</option>
+    </select>
+    <div>
+      <h4>關注城市</h4>
+      <div class="card-columns">
+        <environment-info @star="rootPushStart" v-for="(item,index) in stared" :info-data="item" :star-check="1" :key="index"></environment-info>
+      </div>
+    </div>
+
+    <hr>
+    <div class="card-columns">
+      <environment-info @star="rootPushStart" v-for="(item,index) in filterCounty" :info-data="item" :star-check="0" :key="index"></environment-info>
+    </div>
+  </div>
+  <script type="text/x-template" id="environment-info">
+    <div class="card" :class="bgColor">
+      <div class="card-header">{{infoData.County}} - {{infoData.SiteName}}
+        <a href="#" class="float-right" @click.prevent="setStar()">
+          <i class="fa-star" :class="{'far':starCheck==0,'fas':starCheck==1}"></i>
+        </a>
+      </div>
+      <div class="card-body">
+        <ul class="list-unstyled">
+          <li>AQI 指數: {{infoData.AQI}}</li>
+          <li>PM2.5: {{infoData['PM2.5']}}</li>
+          <li>說明: {{infoData.Status}}</li>
+        </ul>
+        {{infoData.PublishTime}}
+      </div>
+    </div>
+  </script>
+
+  <script>
+    Vue.component('environment-info', {
+      props: ['infoData', 'starCheck'],
+      template: '#environment-info',
+      computed: {
+        bgColor() {
+          if (this.infoData.Status == '普通') return 'status-aqi2';
+          if (this.infoData.Status == '對敏感族群不健康') return 'status-aqi3';
+          if (this.infoData.Status == '對所有族群不健康') return 'status-aqi4';
+          if (this.infoData.Status == '非常不健康') return 'status-aqi5';
+          if (this.infoData.Status == '危害') return 'status-aqi6';
+        }
+      },
+      methods: {
+        setStar() {
+          this.$emit('star', [this.infoData.Latitude, this.infoData.Longitude]);
+        }
+      }
+    });
+
+    var app = new Vue({
+      el: '#app',
+      data: {
+        data: [],
+        location: [],
+        stared: [],
+        filter: '',
+      },
+      // 請在此撰寫 JavaScript
+      created() {
+        const vm = this;
+        const api = 'http://opendata2.epa.gov.tw/AQI.json';
+
+        // 使用 jQuery ajax
+        $.get(api).then(function (response) {
+          vm.data = response;
+          console.log(response)
+          let county_name = '';
+          vm.data.forEach(function (item) {
+            if (county_name != item.County) {
+              county_name = item.County;
+              vm.location.push(item.County);
+            }
+          });
+
+        });
+      },
+      computed: {
+        filterCounty() {
+          let vm = this;
+          let filterData = [];
+          filterData = vm.data.filter(function (item) {
+            if (item.County == vm.filter || vm.filter == '') {
+              return true;
+            }
+          });
+          return filterData;
+        }
+      },
+      methods: {
+        getData() {
+
+        },
+        rootPushStart(arr) {
+          let vm = this;
+          let newIndex = -1;
+          vm.stared.forEach(function (item, key) {
+            if (item.Latitude == arr[0] && item.Longitude == arr[1]) {
+              newIndex = key;
+            }
+
+          });
+          console.log(newIndex);
+          vm.data.forEach(function (item) {
+            if (newIndex == -1) {
+              if (item.Latitude == arr[0] && item.Longitude == arr[1]) {
+                vm.stared.push(item);
+              }
+            }
+
+
+          });
+          if (newIndex != -1) {
+
+            vm.stared.splice(newIndex, 1);
+          }
+
+        }
+      }
+    });
+  </script>
+  <!-- 
+      狀態對應表
+      '良好',
+      'status-aqi2' '普通',
+      'status-aqi3' '對敏感族群不健康',
+      'status-aqi4' '對所有族群不健康',
+      'status-aqi5' '非常不健康',
+      'status-aqi6' '危害'
+      -->
+  <style>
+    .status-aqi2 {
+      background-color: #ffff00;
+    }
+
+    .status-aqi3 {
+      background-color: #ff7e00;
+    }
+
+    .status-aqi4 {
+      background-color: #ff0000;
+    }
+
+    .status-aqi5 {
+      background-color: #8f3f97;
+    }
+
+    .status-aqi6 {
+      background-color: #7e0023;
+    }
+  </style>
+
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <script src="../js/bootstrap.min.js"></script>
+  <script src="../vue.js"></script>
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="alert">
+    <h1 class="mt-0 text-muted">Filter</h1>
+    <div id="app">
+      <table class="table">
+        <tbody>
+          <tr is="row-component" v-for="(item, key) in data" :item="item" :key="key"></tr>
+        </tbody>
+      </table>
+      {{ data[1].cash | currency | dollarSign }}
+    </div>
+
+    <script type="text/x-template" id="row-component">
+      <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.cash | currency | dollarSign }}</td>
+        <td>{{ item.icash | currency | dollarSign }}</td>
+      </tr>
+    </script>
+
+    <script>
+      Vue.filter('currency', function (value) {
+        return value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+      })
+      Vue.filter('dollarSign', function(value){
+        return `$ ${value}`;
+      })
+      var child = {
+        props: ['item'],
+        template: '#row-component',
+        data: function () {
+          return {
+            data: {}
+          }
+        },
+        // filters: {
+        //   dollarSign: function (value) {
+        //     return `$ ${value}`;
+        //   },
+        //   currency: function (value) {
+        //     return value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        //   }
+        // },
+        mounted: function () {
+          console.log('Component:', this)
+        }
+      }
+
+      var app = new Vue({
+        el: '#app',
+        data: {
+          data: [{
+              name: 'Mike',
+              cash: 100,
+              icash: 500,
+            },
+            {
+              name: 'Kack',
+              cash: 10000,
+              icash: 5000,
+            },
+            {
+              name: 'Anna',
+              cash: 500,
+              icash: 500,
+            },
+            {
+              name: 'Luna',
+              cash: 10000,
+              icash: 100,
+            },
+          ]
+        },
+        components: {
+          "row-component": child
+        },
+        mounted: function () {
+          console.log('Vue init:', this)
+        }
+      });
+    </script>
+
+
+  </div>
+</body>
+
+</html>

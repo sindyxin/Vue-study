@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <script src="../js/bootstrap.min.js"></script>
+  <script src="../vue.js"></script>
+  <title>Props</title>
+</head>
+
+<body>
+  <div class="container">
+    <h1 class="mt-0 text-muted">Passing outside data to inside</h1>
+
+    <div id="app">
+      <h2>Passing Static</h2>
+      <!-- imgUrl cannot use in html, need add - before uppercase(L) and lowercase the L -->
+      <photo img-url="https://images.unsplash.com/photo-1522204538344-922f76ecc041?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=50e38600a12d623a878983fc5524423f&auto=format&fit=crop&w=1351&q=80"></photo>
+      <h2>Passing Dynamic</h2>
+      <photo :img-url="url"></photo>
+    </div>
+
+    <script type="text/x-template" id="photo">
+      <div>
+        <img :src="imgUrl" class="img-fluid" alt="" />
+        <p>風景照</p>
+      </div>
+    </script>
+
+    <script>
+      Vue.component('photo', {
+        props:['imgUrl'],
+        template: '#photo'
+      })
+
+      var app = new Vue({
+        el: '#app',
+        data: {
+          url: 'https://images.unsplash.com/photo-1522204538344-922f76ecc041?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=50e38600a12d623a878983fc5524423f&auto=format&fit=crop&w=1351&q=80'
+        }
+      });
+    </script>
+
+  </div>
+
+
+</body>
+
+</html>

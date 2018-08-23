@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <script src="../js/bootstrap.min.js"></script>
+  <script src="../vue.js"></script>
+  <title>Function return</title>
+</head>
+
+<body>
+
+  <div class="col-md-9 post">
+    <!-- 練習開始 -->
+    <h1 class="mt-0 text-muted">Component must use function return</h1>
+
+    <div class="alert alert-secondary">
+      <ol class="mb-0">
+        <li>Fix error</li>
+      </ol>
+    </div>
+
+    <div id="app">
+      <counter-component></counter-component>
+      <counter-component></counter-component>
+      <counter-component></counter-component>
+    </div>
+
+    <script type="text/x-template" id="counter-component">
+      <div>
+        Click
+        <button class="btn btn-outline-secondary btn-sm" @click="counter += 1">{{ counter }}</button> 下。
+      </div>
+    </script>
+
+    <script>
+      Vue.component('counter-component', {
+        // we can't use like this 
+        // data: {
+        //   counter: 0
+        // },
+        //we need use funxtion return
+        data: function(){
+          return {
+            counter:0
+          }
+        },
+        template: '#counter-component'
+      })
+
+      var app = new Vue({
+        el: '#app',
+      });
+    </script>
+
+</body>
+
+</html>

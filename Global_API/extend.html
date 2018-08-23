@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <script src="../js/bootstrap.min.js"></script>
+  <script src="../vue.js"></script>
+  <title>Document</title>
+</head>
+
+<body>
+
+  <div class="alert alert-secondary">
+    <h1 class="mt-0 text-muted">Extend</h1>
+    <div id="app">
+      <table class="table">
+        <tbody>
+          <tr is="row-component-one" v-for="(item, key) in data" v-if="key % 2" :item="item" :key="key"></tr>
+          <tr is="row-component-two" v-for="(item, key) in data" v-if="(key - 1) % 2" :item="item" :key="key"></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <script type="text/x-template" id="row-component">
+      <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.cash | currency | dollarSign }}</td>
+        <td>{{ item.icash | currency | dollarSign }}</td>
+      </tr>
+    </script>
+
+    <script type="text/x-template" id="row-component-two">
+      <tr class="bg-primary text-white">
+        <td>{{ item.name }}</td>
+        <td>{{ item.cash | currency | dollarSign }}</td>
+        <td>{{ item.icash | currency | dollarSign }}</td>
+      </tr>
+    </script>
+
+    <script>
+      // extend 是基礎建構的概念
+      var newExtend = Vue.extend({
+        data: function () {
+          return {
+            data: {},
+            extendData: '這段文字是 extend 得到'
+          }
+        },
+        template: '#row-component',
+        filters: {
+          dollarSign: function (n) {
+            return `$ ${n}`
+          },
+          currency: function (n) {
+            return n.toFixed(2).replace(/./g, function (c, i, a) {
+              return i && c !== "." && ((a.length - i) % 3 === 0) ? ',' + c : c;
+            });
+          }
+        },
+        mounted: function () {
+          console.log('Extend:', this)
+        }
+      });
+
+      var childOne = {
+        props: ['item'],
+        extends:newExtend
+      }
+
+      var childTwo = {
+        props: ['item'],
+        //if we give new data, it will have mewExtend lifecycle data, also have childTwo data, means not only inheritance original data, also add new data 
+        data:function(){
+          return {childTwo:'component2', extendData: 'lalalalaa'} //for extendData, will overwrite original data content
+        },
+        template: '#row-component-two',
+        extends:newExtend,
+        mounted: function () {
+          console.log('childTwo');
+        }
+      }
+
+      var app = new Vue({
+        el: '#app',
+        data: {
+          data: [{
+              name: 'Mike',
+              cash: 100,
+              icash: 500,
+            },
+            {
+              name: 'Jack',
+              cash: 10000,
+              icash: 5000,
+            },
+            {
+              name: 'Anna',
+              cash: 500,
+              icash: 500,
+            },
+            {
+              name: 'Lucy',
+              cash: 10000,
+              icash: 100,
+            },
+          ]
+        },
+        components: {
+          "row-component-one": childOne,
+          "row-component-two": childTwo,
+        },
+        mounted: function () {
+          console.log('Vue init:', this)
+        }
+      });
+    </script>
+
+
+  </div>
+</body>
+
+</html>

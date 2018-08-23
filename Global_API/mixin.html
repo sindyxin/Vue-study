@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <script src="../js/bootstrap.min.js"></script>
+  <script src="../vue.js"></script>
+  <title>Document</title>
+</head>
+
+<body>
+
+  <div class="alert">
+    <h1 class="mt-0 text-muted">Mixins</h1>
+    <div id="app">
+      <table class="table">
+        <tbody>
+          <tr is="row-component" v-for="(item, key) in data" :item="item" :key="key"></tr>
+          <tr is="row-component-two" v-for="(item, key) in data" :item="item"></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <script type="text/x-template" id="row-component">
+      <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.cash | currency | dollarSign }}</td>
+        <td>{{ item.icash | currency | dollarSign }}</td>
+      </tr>
+    </script>
+
+    <script>
+      // mixin 是多個混合的概念
+      var filterMixin = {
+        template: '#row-component',
+        filters: {
+          dollarSign: function (n) {
+            return `$ ${n}`
+          },
+          currency: function (n) {
+            return n.toFixed(2).replace(/./g, function (c, i, a) {
+              return i && c !== "." && ((a.length - i) % 3 === 0) ? ',' + c : c;
+            });
+          }
+        },
+      }
+      var mountedMixin = {
+        mounted() {
+          console.log('這段是 Mixin 產生')
+        }
+      }
+
+      Vue.component('row-component', {
+        props: ['item'],
+        data: function () {
+          return {
+            data: {},
+          }
+        },
+        mixins: [filterMixin, mountedMixin],
+
+      });
+      Vue.component('row-component-two', {
+        props: ['item'],
+        data: function () {
+          return {
+            data: {
+              data: 'two'
+            }
+          }
+        },
+        mixins:[filterMixin, mountedMixin]
+      })
+
+      var app = new Vue({
+        el: '#app',
+        data: {
+          data: [{
+              name: 'Mike',
+              cash: 100,
+              icash: 500,
+            },
+            {
+              name: 'Jack',
+              cash: 10000,
+              icash: 5000,
+            },
+            {
+              name: 'LIna',
+              cash: 500,
+              icash: 500,
+            },
+            {
+              name: 'Nicole',
+              cash: 10000,
+              icash: 100,
+            },
+          ]
+        },
+        mounted: function () {
+          console.log('Vue init:', this)
+        }
+      });
+    </script>
+
+  </div>
+</body>
+
+</html>

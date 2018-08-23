@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <script src="../js/bootstrap.min.js"></script>
+  <script src="../vue.js"></script>
+  <title>Emit</title>
+</head>
+
+<body>
+
+
+  <div class="alert alert-secondary">
+    <div id="app">
+      <h2>Use emit pass data outward</h2>
+      I have {{ cash }} dollers.
+      <button-counter @increment="addDoller"></button-counter>
+    </div>
+
+    <script>
+      Vue.component('buttonCounter', {
+        template: `<div>
+            <button @click="incrementCounter" class="btn btn-outline-primary">增加 {{ counter }} 元</button>
+            <input type="number" class="form-control mt-2" v-model="counter">
+          </div>`,
+        data: function () {
+          return {
+            counter: 1
+          }
+        },
+        methods: {
+          incrementCounter:function(){
+            this.$emit('increment', Number(this.counter));
+          }
+        }
+      });
+
+      var app = new Vue({
+        el: '#app',
+        data: {
+          cash: 300
+        },
+        methods: {
+          // give prameter here will can change add amount of dollers each time when we add to total 
+          addDoller:function(newNumber){
+            this.cash = this.cash+newNumber;
+          }
+        }
+      });
+    </script>
+  </div>
+</body>
+
+</html>

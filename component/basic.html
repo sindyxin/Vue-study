@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="../css/bootstrap.min.css">
+  <script src="../js/bootstrap.min.js"></script>
+  <script src="../vue.js"></script>
+  <title>Document</title>
+</head>
+
+<body>
+  <div class="alert alert-secondary">
+    <ol class="mb-0">
+      <li>Use x-template build table component</li>
+      <li>Use is hook template</li>
+      <li>Use prop transfer data</li>
+      <li>說明局部註冊及全域註冊</li>
+    </ol>
+  </div>
+  <div id="app">
+    <table class="table">
+      <thead>
+      </thead>
+      <tbody>
+        <!-- because inside tbody  need use <tr>, we use <row-component> will broken table format. fix this problem we need use <tr is="row-component><tr>", is in here is dynamic switch>
+
+          -->
+        <tr is="row-component" v-for="(item, key) in data" :person="item" :key="key"></tr>
+        <!-- <tr v-for="(item, key) in data" :item="item" :key="key">
+          <td>{{ item.name }}</td>
+          <td>{{ item.cash }}</td>
+          <td>{{ item.icash }}</td>
+        </tr> -->
+      </tbody>
+    </table>
+  </div>
+  <script type="text/x-template" id="rowComponentTemplate">
+    <tr>
+      <td>{{ person.name }}</td>
+      <td>{{ person.cash }}</td>
+      <td>{{ person.icash }}</td>
+    </tr>
+  </script>
+
+  <script>
+    // Vue.component('row-component', {
+    //   props:['person'],
+    //   template: '#rowComponentTemplate',
+    // })
+    var child = {
+      props:['person'],
+      template: '#rowComponentTemplate',
+    }
+    var app = new Vue({
+      el: '#app',
+      data: {
+        data: [{
+            name: 'Mike',
+            cash: 100,
+            icash: 500,
+          },
+          {
+            name: 'Jack',
+            cash: 10000,
+            icash: 5000,
+          },
+          {
+            name: 'Anna',
+            cash: 500,
+            icash: 500,
+          },
+          {
+            name: 'Lina',
+            cash: 10000,
+            icash: 100,
+          },
+        ]
+      },
+      components:{
+        "row-component":child
+      }
+    });
+  </script>
+
+</body>
+
+</html>
